@@ -1,11 +1,12 @@
 from flask import Blueprint, views, render_template, request, session, redirect, url_for, g,jsonify
 
-from exts import db
+from exts import db,mail
 from .decorators import login_required
 
 from .forms import LoginForm,ResetpwdForm
 from .models import CmsUser
 import config
+from flask_mail import Message
 from utils import restful
 
 cms_bp = Blueprint('cms',__name__,url_prefix='/cms')
@@ -23,11 +24,17 @@ def logout():
     del session[config.CMS_USER_ID]
     return redirect(url_for('cms.login'))
 
+
 @cms_bp.route('/profile/')
 @login_required
 def profile():
     return render_template('cms/cms_profile.html')
 
+@cms_bp.route('/email/')
+def send_mail():
+    message = Message('邮件发送',recipients=['834424581@qq.com'],body='测试')
+    mail.send(message)
+    return 'success'
 
 class LoginView(views.MethodView):
     def get(self,message=None):
@@ -75,5 +82,14 @@ class ResetPwdView(views.MethodView):
         else:
             return restful.params_error(form.get_error())
 
+
+class ResetEmailView(views.MethodView):
+    decorators = [login_required]
+    def get(self):
+        return render_template('cms/cms_resetemail.html')
+    def post(self):
+        pass
+
 cms_bp.add_url_rule('/login/',view_func=LoginView.as_view('login'))
 cms_bp.add_url_rule('/resetpwd/',view_func=ResetPwdView.as_view('resetpwd'))
+cms_bp.add_url_rule('/resetemail/',view_func=ResetEmailView.as_view('resetemail'))
