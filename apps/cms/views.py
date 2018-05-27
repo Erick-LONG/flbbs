@@ -44,13 +44,4 @@ class LoginView(views.MethodView):
             return self.get(message=message)
 
 
-@cms_bp.before_request
-def before_request():
-    if config.CMS_USER_ID in session:
-        user_id = session.get(config.CMS_USER_ID)
-        user = CmsUser.query.get(user_id)
-        if user:
-            g.cms_user = user
-
-
 cms_bp.add_url_rule('/login/',view_func=LoginView.as_view('login'))
