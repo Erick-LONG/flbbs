@@ -19,6 +19,11 @@ def logout():
     del session[config.CMS_USER_ID]
     return redirect(url_for('cms.login'))
 
+@cms_bp.route('/profile/')
+@login_required
+def profile():
+    return render_template('cms/cms_profile.html')
+
 
 class LoginView(views.MethodView):
     def get(self,message=None):
