@@ -1,5 +1,5 @@
 from flask import Blueprint, views, render_template, request, session, redirect, url_for, g,jsonify
-
+import string,random
 from exts import db,mail
 from .decorators import login_required
 
@@ -29,6 +29,26 @@ def logout():
 @login_required
 def profile():
     return render_template('cms/cms_profile.html')
+
+@cms_bp.route('/email_captcha/')
+def email_captcha():
+    email = request.args.get('email')
+    if not email:
+        return restful.params_error('请传递邮箱参数！')
+    source = list(string.ascii_letters)
+    source.extend(map(lambda x: str(x),range(0,10)))
+    captcha = "".join(random.sample(source,6))
+
+    #给这个邮箱发送邮件
+    message= Message('python论坛验证码',recipients=[email],body='您的邮箱验证码是：%s'% captcha)
+    try:
+        mail.send(message)
+    except :
+        return restful.server_error()
+    return restful.success()
+
+
+
 
 @cms_bp.route('/email/')
 def send_mail():
