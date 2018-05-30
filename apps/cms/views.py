@@ -3,11 +3,11 @@ import string,random
 from exts import db,mail
 from .decorators import login_required
 
-from .forms import LoginForm,ResetpwdForm
+from .forms import LoginForm,ResetpwdForm,ResetEmailForm
 from .models import CmsUser
 import config
 from flask_mail import Message
-from utils import restful
+from utils import restful,zlcache
 
 cms_bp = Blueprint('cms',__name__,url_prefix='/cms')
 
@@ -45,9 +45,9 @@ def email_captcha():
         mail.send(message)
     except :
         return restful.server_error()
+
+    zlcache.set(email,captcha)#邮箱，验证码，存到缓存
     return restful.success()
-
-
 
 
 @cms_bp.route('/email/')
@@ -108,7 +108,14 @@ class ResetEmailView(views.MethodView):
     def get(self):
         return render_template('cms/cms_resetemail.html')
     def post(self):
-        pass
+        form = ResetEmailForm(request.form)
+        if form.validate():
+            email = form.email.data
+            g.cms_user.email = email
+            db.session.commit()
+            return restful.success()
+        else:
+            return restful.params_error(form.get_error())
 
 cms_bp.add_url_rule('/login/',view_func=LoginView.as_view('login'))
 cms_bp.add_url_rule('/resetpwd/',view_func=ResetPwdView.as_view('resetpwd'))
