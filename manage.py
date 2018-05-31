@@ -25,6 +25,7 @@ def create_cms_user(username,password,email):
     print('cms 用户添加成功')
 
 
+
 @manager.command
 def create_role():
     #1、访问者（可以修改个人信息）
