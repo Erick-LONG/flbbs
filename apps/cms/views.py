@@ -1,10 +1,10 @@
 from flask import Blueprint, views, render_template, request, session, redirect, url_for, g,jsonify
 import string,random
 from exts import db,mail
-from .decorators import login_required
+from .decorators import login_required,permission_required
 
 from .forms import LoginForm,ResetpwdForm,ResetEmailForm
-from .models import CmsUser
+from .models import CmsUser,CMSPersmmission
 import config
 from flask_mail import Message
 from utils import restful,zlcache
@@ -55,6 +55,47 @@ def send_mail():
     message = Message('邮件发送',recipients=['834424581@qq.com'],body='测试')
     mail.send(message)
     return 'success'
+
+
+cms_bp.route('/posts/')
+@login_required
+@permission_required(CMSPersmmission.POSTER)
+def posts():
+    return render_template('cms/cms_posts.html')
+
+
+cms_bp.route('/comments/')
+@login_required
+@permission_required(CMSPersmmission.COMMENTER)
+def comments():
+    return render_template('cms/cms_comments.html')
+
+
+cms_bp.route('/boards/')
+@login_required
+@permission_required(CMSPersmmission.BOARDER)
+def boards():
+    return render_template('cms/cms_boards.html')
+
+
+cms_bp.route('/fusers/')
+@login_required
+@permission_required(CMSPersmmission.FRONTUSER)
+def fusers():
+    return render_template('cms/cms_fusers.html')
+
+cms_bp.route('/cusers/')
+@login_required
+@permission_required(CMSPersmmission.CMSUSER)
+def cusers():
+    return render_template('cms/cms_cusers.html')
+
+cms_bp.route('/croles/')
+@login_required
+@permission_required(CMSPersmmission.ALL_PERMISSION)
+def croles():
+    return render_template('cms/cms_croles.html')
+
 
 class LoginView(views.MethodView):
     def get(self,message=None):
