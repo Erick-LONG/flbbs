@@ -21,7 +21,7 @@ class ResetEmailForm(BaseForm):
     captcha = StringField(validators=[Length(min=6,max=6,message='请输入正确长度的验证码。')])
 
     def validate_captcha(self,field):
-        captcha = field.captcha
+        captcha = field.data
         email = self.email.data
         captcha_cache = zlcache.get(email)
         if not captcha_cache or captcha.lower() != captcha_cache.lower():

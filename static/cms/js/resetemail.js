@@ -42,8 +42,15 @@ $(function () {
             },
             'success':function (data) {
                 if(data['code'] ==200){
-
+                    emailE.val("");
+                    captchaE.val("");
+                    zlalert.alertSuccessToast('恭喜！邮箱修改成功！')
+                }else{
+                    zlalert.alertInfo(data['message']);
                 }
+            },
+            'fail':function (error) {
+                zlalert.alertNetworkError();
             }
         });
     });
