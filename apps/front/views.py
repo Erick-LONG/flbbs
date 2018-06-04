@@ -7,6 +7,7 @@ from flask import (
 
 from utils.captcha import Captcha
 from io import BytesIO
+from exts import alidayu
 
 front_bp = Blueprint('front',__name__)
 
@@ -28,6 +29,14 @@ def graph_captcha():
     resp.content_type = 'image/png'
     return resp
 
+
+@front_bp.route('/sms_captcha/')
+def sms_captcha():
+    result = alidayu.send_sms('13121213322',code='abcd')
+    if result:
+        return '发送成功'
+    else:
+        return '发送失败'
 
 class SignupView(views.MethodView):
     def get(self):

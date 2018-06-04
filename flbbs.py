@@ -3,7 +3,7 @@ from apps.cms import cms_bp
 from apps.common import common_bp
 from apps.front import front_bp
 import config
-from exts import db,mail
+from exts import db,mail,alidayu
 from flask_wtf import CSRFProtect
 
 
@@ -17,6 +17,7 @@ def create_app():
 
     db.init_app(app)
     mail.init_app(app)
+    alidayu.init_app(app)
     CSRFProtect(app)
     return app
 
